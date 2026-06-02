@@ -58,18 +58,18 @@
 </style>
 </head>
 
-<body class="pb-24">
+<body class="pb-24 bg-slate-950 text-white">
 
-<header class="border-b border-slate-800 bg-black/30 backdrop-blur-xl sticky top-0 z-40">
+<header class="border-b border-slate-700 bg-gradient-to-r from-cyan-900 to-blue-900 backdrop-blur sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        <h1 class="text-2xl font-bold tracking-wider text-primary-color">
-            DIMEX MASTER DASHBOARD
+        <h1 class="text-2xl font-bold tracking-wider text-cyan-300 flex items-center gap-2">
+            ⚡ DIMEX MASTER
         </h1>
 
         <button id="connectBtn"
             onclick="openAppKitModal()"
-            class="bg-primary-color text-black font-bold px-5 py-2 rounded-xl shadow-lg glow">
-            <span id="btnText">Connect Wallet</span>
+            class="bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-bold px-5 py-2 rounded-xl shadow-lg">
+            🔗 <span id="btnText">Connect Wallet</span>
         </button>
     </div>
 </header>
@@ -78,94 +78,133 @@
 
 <!-- WALLET -->
 <div id="walletAddressDiv"
- class="hidden bg-slate-900 p-3 rounded-xl border border-cyan-500/30">
- Connected:
- <span id="userAddress" class="text-cyan-400 font-mono"></span>
+    class="hidden text-sm bg-slate-900/60 p-3 rounded-xl border border-cyan-500/30">
+    👤 Connected:
+    <span id="userAddress" class="text-cyan-300 font-mono">0x0...</span>
 </div>
 
-<!-- CAP -->
-<section class="card-bg p-6 rounded-2xl">
- <div class="flex justify-between mb-4">
-   <h3>4X Income Cap</h3>
-   <span id="capPercentage" class="text-yellow-400">0%</span>
- </div>
+<!-- CAP CARD -->
+<section class="bg-gradient-to-br from-slate-900 to-slate-800 p-6 rounded-2xl border border-cyan-500/20 shadow-lg">
 
- <div class="h-4 bg-slate-800 rounded">
-   <div id="progressBar" class="h-full bg-gradient-to-r from-cyan-400 to-purple-500" style="width:0%"></div>
- </div>
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-cyan-200 flex items-center gap-2">
+            📊 4X Income Protection Cap
+        </h3>
+        <span id="capPercentage" class="text-2xl font-bold text-amber-400">0%</span>
+    </div>
 
- <div class="grid grid-cols-3 gap-3 mt-4">
-   <div class="bg-slate-900 p-3 rounded"> <p>Target</p><p id="statMapCap">0</p></div>
-   <div class="bg-slate-900 p-3 rounded"> <p>Earned</p><p id="statTotalEarned">0</p></div>
-   <div class="bg-slate-900 p-3 rounded"> <p>Remain</p><p id="statRemaining">0</p></div>
- </div>
+    <div class="w-full bg-slate-800 h-5 rounded-full overflow-hidden border border-slate-700">
+        <div id="progressBar"
+            class="h-full bg-gradient-to-r from-cyan-400 to-purple-500 transition-all duration-500"
+            style="width:0%">
+        </div>
+    </div>
+
+    <div class="grid grid-cols-3 gap-4 mt-4 text-center">
+
+        <div class="bg-slate-900/60 p-3 rounded-xl border border-cyan-500/10">
+            💎
+            <p class="text-xs text-slate-400">4X Target</p>
+            <p id="statMapCap" class="text-lg font-bold text-white">0.00</p>
+        </div>
+
+        <div class="bg-slate-900/60 p-3 rounded-xl border border-green-500/20">
+            📈
+            <p class="text-xs text-slate-400">Total Earned</p>
+            <p id="statTotalEarned" class="text-lg font-bold text-green-400">0.00</p>
+        </div>
+
+        <div class="bg-slate-900/60 p-3 rounded-xl border border-blue-500/20">
+            ⏳
+            <p class="text-xs text-slate-400">Remaining</p>
+            <p id="statRemaining" class="text-lg font-bold text-cyan-300">0.00</p>
+        </div>
+
+    </div>
+
 </section>
 
 <!-- STATS -->
-<section class="grid md:grid-cols-3 lg:grid-cols-6 gap-4">
+<section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
 
-<div class="card-bg p-4 rounded-xl"><p>Deposit</p><p id="statTotalDeposit">0</p></div>
-<div class="card-bg p-4 rounded-xl"><p>Wallet</p><p id="statWalletBalance">0</p></div>
-<div class="card-bg p-4 rounded-xl"><p>ROI</p><p id="statRoiIncome">0</p></div>
-<div class="card-bg p-4 rounded-xl"><p>Direct</p><p id="statDirectIncome">0</p></div>
-<div class="card-bg p-4 rounded-xl"><p>Binary</p><p id="statBinaryIncome">0</p></div>
-<div class="card-bg p-4 rounded-xl"><p>Withdraw</p><p id="statTotalWithdrawn">0</p></div>
+    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 hover:border-cyan-400 transition">
+        💰<p class="text-xs text-slate-400">Deposit</p>
+        <p id="statTotalDeposit" class="font-bold text-white">0</p>
+    </div>
+
+    <div class="bg-slate-900 p-4 rounded-xl border border-cyan-500/30">
+        💼<p class="text-xs text-cyan-300">Wallet</p>
+        <p id="statWalletBalance" class="font-bold text-cyan-300">0</p>
+    </div>
+
+    <div class="bg-slate-900 p-4 rounded-xl border border-purple-500/20">
+        📊<p class="text-xs text-slate-400">ROI</p>
+        <p id="statRoiIncome" class="font-bold text-white">0</p>
+    </div>
+
+    <div class="bg-slate-900 p-4 rounded-xl border border-green-500/20">
+        🤝<p class="text-xs text-slate-400">Direct</p>
+        <p id="statDirectIncome" class="font-bold text-white">0</p>
+    </div>
+
+    <div class="bg-slate-900 p-4 rounded-xl border border-yellow-500/20">
+        🌿<p class="text-xs text-slate-400">Binary</p>
+        <p id="statBinaryIncome" class="font-bold text-white">0</p>
+    </div>
+
+    <div class="bg-slate-900 p-4 rounded-xl border border-red-500/20">
+        💸<p class="text-xs text-slate-400">Withdrawn</p>
+        <p id="statTotalWithdrawn" class="font-bold text-white">0</p>
+    </div>
 
 </section>
 
-<!-- REFERRAL -->
+<!-- REF LINKS -->
 <section class="grid md:grid-cols-2 gap-4">
 
-<div class="card-bg p-4 rounded-xl">
- <h3 class="text-cyan-400">Left Referral</h3>
- <p id="leftRefLink" class="break-all text-xs"></p>
+<div class="bg-gradient-to-br from-cyan-900/30 to-slate-900 p-4 rounded-xl border border-cyan-500/20">
+    🔵 <h3 class="font-bold text-cyan-300">LEFT REF LINK</h3>
+    <p id="leftRefLink" class="text-xs break-all text-slate-300 mt-2"></p>
+    <button class="mt-2 px-3 py-1 bg-cyan-500 text-black rounded" onclick="copyText('leftRefLink')">Copy</button>
 </div>
 
-<div class="card-bg p-4 rounded-xl">
- <h3 class="text-pink-400">Right Referral</h3>
- <p id="rightRefLink" class="break-all text-xs"></p>
-</div>
-
-</section>
-
-<!-- TREE -->
-<section class="card-bg p-6 rounded-xl text-center">
-
-<h2 class="text-cyan-400 mb-4">Binary Tree</h2>
-
-<div class="text-center">
- YOU
- <div>/ \</div>
-
- <div class="grid grid-cols-2 gap-4 mt-4">
-   <div class="bg-slate-900 p-3 rounded">
-     LEFT<br>
-     <span id="nodeLeft">Empty</span>
-   </div>
-
-   <div class="bg-slate-900 p-3 rounded">
-     RIGHT<br>
-     <span id="nodeRight">Empty</span>
-   </div>
- </div>
+<div class="bg-gradient-to-br from-purple-900/30 to-slate-900 p-4 rounded-xl border border-purple-500/20">
+    🟣 <h3 class="font-bold text-purple-300">RIGHT REF LINK</h3>
+    <p id="rightRefLink" class="text-xs break-all text-slate-300 mt-2"></p>
+    <button class="mt-2 px-3 py-1 bg-purple-500 text-black rounded" onclick="copyText('rightRefLink')">Copy</button>
 </div>
 
 </section>
 
-<!-- DOWNLINE -->
-<section class="grid md:grid-cols-3 gap-4">
+<!-- DEPOSIT -->
+<section class="bg-slate-900 p-6 rounded-2xl border border-slate-700">
 
-<div class="card-bg p-4 rounded-xl">
- <p>Direct</p><p id="countDirect">0</p>
-</div>
+<h2 class="text-cyan-300 font-bold mb-4">📥 Deposit</h2>
 
-<div class="card-bg p-4 rounded-xl">
- <p>Left</p><p id="countLeft">0</p>
-</div>
+<input id="depositAmount" class="w-full p-2 mb-2 bg-slate-800 rounded" placeholder="USDT Amount">
 
-<div class="card-bg p-4 rounded-xl">
- <p>Right</p><p id="countRight">0</p>
-</div>
+<input id="refAddress" class="w-full p-2 mb-2 bg-slate-800 rounded" placeholder="Ref Address">
+
+<input id="parentAddress" class="w-full p-2 mb-3 bg-slate-800 rounded" placeholder="Parent Address">
+
+<button onclick="executeDeposit()"
+class="w-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-bold p-3 rounded-xl">
+🚀 EXECUTE DEPOSIT
+</button>
+
+</section>
+
+<!-- WITHDRAW -->
+<section class="bg-slate-900 p-6 rounded-2xl border border-slate-700">
+
+<h2 class="text-green-300 font-bold mb-3">💸 Withdraw</h2>
+
+<p>Balance: <span id="withdrawableDisplay">0</span></p>
+
+<button onclick="executeWithdraw()"
+class="w-full mt-3 bg-green-500 text-black font-bold p-3 rounded-xl">
+WITHDRAW
+</button>
 
 </section>
 
