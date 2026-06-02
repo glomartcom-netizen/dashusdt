@@ -160,19 +160,23 @@
 </section>
 
 <!-- REF LINKS -->
-<section class="grid md:grid-cols-2 gap-4">
+<section class="bg-slate-900 p-6 rounded-2xl border border-green-500/30 mt-6">
 
-<div class="bg-gradient-to-br from-cyan-900/30 to-slate-900 p-4 rounded-xl border border-cyan-500/20">
-    🔵 <h3 class="font-bold text-cyan-300">LEFT REF LINK</h3>
-    <p id="leftRefLink" class="text-xs break-all text-slate-300 mt-2"></p>
-    <button class="mt-2 px-3 py-1 bg-cyan-500 text-black rounded" onclick="copyText('leftRefLink')">Copy</button>
-</div>
+    <h3 class="text-green-400 font-bold mb-4">🔗 Referral Links</h3>
 
-<div class="bg-gradient-to-br from-purple-900/30 to-slate-900 p-4 rounded-xl border border-purple-500/20">
-    🟣 <h3 class="font-bold text-purple-300">RIGHT REF LINK</h3>
-    <p id="rightRefLink" class="text-xs break-all text-slate-300 mt-2"></p>
-    <button class="mt-2 px-3 py-1 bg-purple-500 text-black rounded" onclick="copyText('rightRefLink')">Copy</button>
-</div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <div class="bg-slate-950 p-4 rounded-xl border border-green-500/20">
+            <p class="text-xs text-slate-400">LEFT LINK</p>
+            <p id="leftRefLink" class="text-green-300 font-mono break-all">loading...</p>
+        </div>
+
+        <div class="bg-slate-950 p-4 rounded-xl border border-green-500/20">
+            <p class="text-xs text-slate-400">RIGHT LINK</p>
+            <p id="rightRefLink" class="text-green-300 font-mono break-all">loading...</p>
+        </div>
+
+    </div>
 
 </section>
 
@@ -208,51 +212,90 @@ WITHDRAW
 
 </section>
 
-<!-- SIMPLE BINARY + DOWNLINE TREE -->
-<section class="bg-slate-900 p-6 rounded-2xl border border-green-500/30 mt-6">
+<section class="bg-slate-900 p-6 rounded-2xl border border-green-500/30">
 
-    <div class="flex items-center justify-between mb-6">
-        <h3 class="text-lg font-bold text-green-400">🌳 Binary Tree Overview</h3>
-        <span class="text-xs text-slate-400">First Level Only</span>
-    </div>
+    <h3 class="text-green-400 font-bold mb-4">🌳 Binary Tree</h3>
 
-    <!-- ROOT -->
-    <div class="flex flex-col items-center font-mono">
+    <div class="text-center font-mono">
 
-        <div class="bg-green-500/20 border border-green-500 text-green-300 px-6 py-2 rounded-xl font-bold">
-            YOU (ROOT)
+        <div class="bg-green-500/20 border border-green-500 text-green-300 px-6 py-2 rounded-xl inline-block">
+            YOU
         </div>
 
-        <div class="text-green-500 text-2xl my-2">│</div>
+        <div class="text-green-500 my-2">│</div>
 
-        <!-- LEFT / RIGHT NODE -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full text-center">
+        <div class="grid grid-cols-2 gap-6">
 
-            <!-- LEFT -->
             <div class="bg-slate-950 border border-green-500/30 p-4 rounded-xl">
-                <p class="text-xs text-slate-400 mb-2">⬅ LEFT NODE</p>
-                <p id="leftNode" class="text-green-400 font-bold text-sm">Empty</p>
-
-                <div class="mt-3 text-xs text-slate-500">
-                    Downline: <span id="leftDirectCount">0</span>
-                </div>
+                <p class="text-xs text-slate-400">LEFT NODE</p>
+                <p id="leftNode" class="text-green-400 font-bold">0x000...000</p>
             </div>
 
-            <!-- RIGHT -->
             <div class="bg-slate-950 border border-green-500/30 p-4 rounded-xl">
-                <p class="text-xs text-slate-400 mb-2">➡ RIGHT NODE</p>
-                <p id="rightNode" class="text-green-300 font-bold text-sm">Empty</p>
-
-                <div class="mt-3 text-xs text-slate-500">
-                    Downline: <span id="rightDirectCount">0</span>
-                </div>
+                <p class="text-xs text-slate-400">RIGHT NODE</p>
+                <p id="rightNode" class="text-green-400 font-bold">0x000...000</p>
             </div>
 
+        </div>
+
+    </div>
+</section>
+
+<section class="bg-slate-900 p-6 rounded-2xl border border-green-500/30 mt-6">
+
+    <h3 class="text-green-400 font-bold mb-4">💰 Business Volume</h3>
+
+    <div class="grid grid-cols-2 gap-4">
+
+        <div class="bg-slate-950 p-5 rounded-xl border border-green-500/30 text-center">
+            <p class="text-xs text-slate-400">LEFT BUSINESS</p>
+            <p id="leftBusiness" class="text-2xl text-green-400 font-black">0.00</p>
+        </div>
+
+        <div class="bg-slate-950 p-5 rounded-xl border border-green-500/30 text-center">
+            <p class="text-xs text-slate-400">RIGHT BUSINESS</p>
+            <p id="rightBusiness" class="text-2xl text-green-400 font-black">0.00</p>
         </div>
 
     </div>
 
 </section>
+
+<section class="bg-slate-900 p-6 rounded-2xl border border-green-500/30 mt-6">
+
+    <h3 class="text-green-400 font-bold mb-4">👥 Direct Members</h3>
+
+    <div class="space-y-3">
+
+        <!-- SAMPLE ROW -->
+        <div class="bg-slate-950 p-4 rounded-xl border border-green-500/20 flex justify-between">
+
+            <div>
+                <p class="text-green-300 text-sm font-mono">0x1234...abcd</p>
+                <p class="text-xs text-slate-500">2026-06-02 14:30</p>
+            </div>
+
+            <div class="text-right">
+                <p class="text-green-400 font-bold">50 USDT</p>
+                <p class="text-xs text-slate-500">Deposit</p>
+            </div>
+
+        </div>
+
+        <div class="bg-slate-950 p-4 rounded-xl border border-green-500/20 flex justify-between">
+            <div>
+                <p class="text-green-300 text-sm font-mono">0x5678...efgh</p>
+                <p class="text-xs text-slate-500">2026-06-02 15:10</p>
+            </div>
+            <div class="text-right">
+                <p class="text-green-400 font-bold">100 USDT</p>
+                <p class="text-xs text-slate-500">Deposit</p>
+            </div>
+        </div>
+
+    </div>
+
+</section>    
     
 
 </main>
