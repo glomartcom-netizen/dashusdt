@@ -255,203 +255,230 @@
     </script>
 
     <script>
-        const USDT_CONTRACT_ADDRESS = "0x0EB5dC6AF3dBd9F6d10f50c363B61C8714f497E6"; 
-        const DIMEX_CONTRACT_ADDRESS = "0xYOUR_DEPLOYED_DIMEX_CONTRACT_ADDRESS"; // உங்களது DimeX மாஸ்டர் முகவரியை இங்கு உள்ளிடவும்
+                                        
+        const USDT_CONTRACT_ADDRESS = "0x0EB5dC6AF3dBd9F6d10f50c363B61C8714f497E6";
+const DIMEX_CONTRACT_ADDRESS = "0xYOUR_DEPLOYED_DIMEX_CONTRACT_ADDRESS";
 
-        const USDT_ABI = [
-            "function approve(address spender, uint256 amount) external returns (bool)",
-            "function allowance(address owner, address spender) external view returns (uint256)"
-        ];
+// ERC20 USDT ABI
+const USDT_ABI = [
+    "function approve(address spender, uint256 amount) external returns (bool)",
+    "function allowance(address owner, address spender) external view returns (uint256)"
+];
 
-        const DIMEX_ABI = [
-            "function deposit(uint256 _amount, address _ref, address _parent, bool isLeftPlacement) external",
-            "function withdraw() external",
-            "function getDashboardStats(address _user) external view returns (uint256[7] earnings, uint256[6] volumes, uint256[4] counts, uint256[3] limits)",
-            "function getTreeNode(address user) external view returns (address parent, address left, address right, address referrer)",
-            "function getWalletBalance(address user) external view returns(uint256)"
-        ];
+// DIMEX CONTRACT ABI
+const DIMEX_ABI = [
+    "function deposit(uint256 _amount, address _ref, address _parent, bool isLeftPlacement) external",
+    "function withdraw() external",
+    "function getDashboardStats(address _user) external view returns (uint256[7] earnings, uint256[6] volumes, uint256[4] counts, uint256[3] limits)",
+    "function getTreeNode(address user) external view returns (address parent, address left, address right, address referrer)",
+    "function getWalletBalance(address user) external view returns(uint256)"
+];
 
-        let provider, signer, userAddress, dimexContract, usdtContract;
-        let isLeftPlacementSelected = true;
+let provider, signer, userAddress, dimexContract, usdtContract;
+let isLeftPlacementSelected = true;
 
-        // --- URL LINK PARSER SYSTEM RUNTIME ---
-        window.addEventListener("DOMContentLoaded", () => {
-            const params = new URLSearchParams(window.location.search);
-            const refParam = params.get("ref");
-            const sideParam = params.get("side");
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-            if(refParam && refParam.startsWith("0x")) {
-                document.getElementById("refAddress").value = refParam;
-                document.getElementById("parentAddress").value = refParam; // Default cascading fallback
-                console.log("Referral parsed from structural URL:", refParam);
-            }
-            if(sideParam === "left") setPlacement(true);
-            if(sideParam === "right") setPlacement(false);
-        });
+/* ---------------- URL REF SYSTEM ---------------- */
+window.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(window.location.search);
+    const refParam = params.get("ref");
+    const sideParam = params.get("side");
 
-        function getReferralLinks(address) {
-            return {
-                left: `${window.location.origin}/?ref=${address}&side=left`,
-                right: `${window.location.origin}/?ref=${address}&side=right`
-            };
+    if (refParam && refParam.startsWith("0x")) {
+        document.getElementById("refAddress").value = refParam;
+        document.getElementById("parentAddress").value = refParam;
+    }
+
+    if (sideParam === "left") setPlacement(true);
+    if (sideParam === "right") setPlacement(false);
+});
+
+/* ---------------- REF LINKS ---------------- */
+function getReferralLinks(address) {
+    return {
+        left: `${window.location.origin}/?ref=${address}&side=left`,
+        right: `${window.location.origin}/?ref=${address}&side=right`
+    };
+}
+
+/* ---------------- COPY ---------------- */
+function copyText(id) {
+    const text = document.getElementById(id).textContent;
+    if (!text || text.includes("Connect")) {
+        return alert("No valid link");
+    }
+    navigator.clipboard.writeText(text);
+    alert("Copied!");
+}
+
+/* ---------------- WALLET MODAL ---------------- */
+function openAppKitModal() {
+    if (window.appKitModal) {
+        window.appKitModal.open();
+    } else {
+        alert("Wallet loading...");
+    }
+}
+
+/* ---------------- LEFT / RIGHT SELECT ---------------- */
+function setPlacement(isLeft) {
+    isLeftPlacementSelected = isLeft;
+
+    const leftBtn = document.getElementById("leftPosBtn");
+    const rightBtn = document.getElementById("rightPosBtn");
+
+    if (isLeft) {
+        leftBtn.className = "py-3 rounded-xl border-2 border-cyan-500 bg-cyan-500/10 text-white font-bold";
+        rightBtn.className = "py-3 rounded-xl border border-slate-800 bg-slate-900 text-slate-400";
+    } else {
+        rightBtn.className = "py-3 rounded-xl border-2 border-cyan-500 bg-cyan-500/10 text-white font-bold";
+        leftBtn.className = "py-3 rounded-xl border border-slate-800 bg-slate-900 text-slate-400";
+    }
+}
+
+/* ---------------- WALLET SYNC ---------------- */
+window.syncWallet = async function () {
+    const walletProvider = window.appKitModal?.getWalletProvider();
+    if (!walletProvider) return;
+
+    try {
+        provider = new ethers.BrowserProvider(walletProvider);
+        signer = await provider.getSigner();
+        userAddress = await signer.getAddress();
+
+        dimexContract = new ethers.Contract(DIMEX_CONTRACT_ADDRESS, DIMEX_ABI, signer);
+        usdtContract = new ethers.Contract(USDT_CONTRACT_ADDRESS, USDT_ABI, signer);
+
+        document.getElementById("userAddress").innerText = userAddress;
+        document.getElementById("walletAddressDiv").classList.remove("hidden");
+        document.getElementById("btnText").innerText = "Connected";
+
+        const links = getReferralLinks(userAddress);
+        document.getElementById("leftRefLink").innerText = links.left;
+        document.getElementById("rightRefLink").innerText = links.right;
+
+        await loadDashboardData();
+
+    } catch (err) {
+        console.error(err);
+    }
+};
+
+/* ---------------- DASHBOARD LOAD ---------------- */
+async function loadDashboardData() {
+    if (!dimexContract || !userAddress) return;
+
+    try {
+        const stats = await dimexContract.getDashboardStats(userAddress);
+        const tree = await dimexContract.getTreeNode(userAddress);
+        const walletBalanceRaw = await dimexContract.getWalletBalance(userAddress);
+
+        const earnings = stats.earnings;
+        const volumes = stats.volumes;
+        const counts = stats.counts;
+        const limits = stats.limits;
+
+        // FIXED FORMAT
+        const format = (val) => Number(ethers.formatEther(val)).toFixed(2);
+
+        document.getElementById("statTotalEarned").innerText = format(earnings[0]) + " USDT";
+        document.getElementById("statRoiIncome").innerText = format(earnings[1]) + " USDT";
+        document.getElementById("statDirectIncome").innerText = format(earnings[2]) + " USDT";
+        document.getElementById("statBinaryIncome").innerText = format(earnings[3]) + " USDT";
+        document.getElementById("statWalletBalance").innerText = format(earnings[4]) + " USDT";
+        document.getElementById("statTotalWithdrawn").innerText = format(earnings[5]) + " USDT";
+
+        document.getElementById("withdrawableDisplay").innerText =
+            Number(ethers.formatEther(walletBalanceRaw)).toFixed(2) + " USDT";
+
+        document.getElementById("statTotalDeposit").innerText = format(volumes[0]) + " USDT";
+
+        document.getElementById("volActive").innerText = format(volumes[1]);
+        document.getElementById("volLeftCF").innerText = format(volumes[2]);
+        document.getElementById("volRightCF").innerText = format(volumes[3]);
+        document.getElementById("volLeftTotal").innerText = format(volumes[4]);
+        document.getElementById("volRightTotal").innerText = format(volumes[5]);
+
+        document.getElementById("volTotal").innerText =
+            ((Number(volumes[4]) + Number(volumes[5])) / 1e18).toFixed(2);
+
+        document.getElementById("countDirect").innerText = counts[0];
+        document.getElementById("countLeft").innerText = counts[1];
+        document.getElementById("countRight").innerText = counts[2];
+        document.getElementById("countTotal").innerText = counts[3];
+
+        const mapCap = limits[0];
+        const remaining = limits[1];
+        const pctBps = Number(limits?.[2] || 0);
+
+        const percentageReal = (pctBps / 100).toFixed(1);
+
+        document.getElementById("statMapCap").innerText = format(mapCap) + " USDT";
+        document.getElementById("statRemaining").innerText = format(remaining) + " USDT";
+        document.getElementById("capPercentage").innerText = percentageReal + "%";
+        document.getElementById("progressBar").style.width = percentageReal + "%";
+
+        const cleanNode = (addr) =>
+            addr === ZERO_ADDRESS
+                ? "Empty Node"
+                : `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+
+        document.getElementById("nodeLeft").innerText = cleanNode(tree.left);
+        document.getElementById("nodeRight").innerText = cleanNode(tree.right);
+
+    } catch (err) {
+        console.error(err);
+        alert(err?.message || "Dashboard load failed");
+    }
+}
+
+/* ---------------- DEPOSIT ---------------- */
+async function executeDeposit() {
+    if (!dimexContract) return alert("Connect wallet");
+
+    const amount = document.getElementById("depositAmount").value;
+    let ref = document.getElementById("refAddress").value || ZERO_ADDRESS;
+    let parent = document.getElementById("parentAddress").value || ZERO_ADDRESS;
+
+    if (!amount) return alert("Enter amount");
+
+    try {
+        const amountWei = ethers.parseEther(amount.toString());
+
+        const allowance = await usdtContract.allowance(userAddress, DIMEX_CONTRACT_ADDRESS);
+
+        if (BigInt(allowance) < BigInt(amountWei)) {
+            const tx1 = await usdtContract.approve(DIMEX_CONTRACT_ADDRESS, amountWei);
+            await tx1.wait();
         }
 
-        function copyText(id) {
-            const text = document.getElementById(id).innerText;
-            if(!text || text.includes("Connect wallet")) return alert("No valid link to copy.");
-            navigator.clipboard.writeText(text);
-            alert("Referral mapping link copied to clipboard!");
-        }
+        const tx2 = await dimexContract.deposit(amountWei, ref, parent, isLeftPlacementSelected);
+        await tx2.wait();
 
-        function openAppKitModal() {
-            if (window.appKitModal) {
-                window.appKitModal.open();
-            } else {
-                alert("Core Web3 Connection Module initializing...");
-            }
-        }
+        alert("Deposit success");
+        await loadDashboardData();
 
-        function setPlacement(isLeft) {
-            isLeftPlacementSelected = isLeft;
-            const leftBtn = document.getElementById("leftPosBtn");
-            const rightBtn = document.getElementById("rightPosBtn");
-            if(isLeft) {
-                leftBtn.className = "py-3 rounded-xl border-2 border-cyan-500 bg-cyan-500/10 text-white font-bold transition";
-                rightBtn.className = "py-3 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 font-bold transition";
-            } else {
-                rightBtn.className = "py-3 rounded-xl border-2 border-cyan-500 bg-cyan-500/10 text-white font-bold transition";
-                leftBtn.className = "py-3 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 font-bold transition";
-            }
-        }
+    } catch (err) {
+        alert(err?.message || "Deposit failed");
+    }
+}
 
-        // Interconnected via Reown Appkit State Changes Sync Hooks
-        window.syncWallet = async function() {
-            if(!window.appKitModal) return;
-            const walletProvider = window.appKitModal.getWalletProvider();
-            if(!walletProvider) return;
+/* ---------------- WITHDRAW ---------------- */
+async function executeWithdraw() {
+    if (!dimexContract) return alert("Connect wallet");
 
-            try {
-                provider = new ethers.BrowserProvider(walletProvider);
-                signer = await provider.getSigner();
-                userAddress = await signer.getAddress();
+    try {
+        const tx = await dimexContract.withdraw();
+        await tx.wait();
 
-                dimexContract = new ethers.Contract(DIMEX_CONTRACT_ADDRESS, DIMEX_ABI, signer);
-                usdtContract = new ethers.Contract(USDT_CONTRACT_ADDRESS, USDT_ABI, signer);
+        alert("Withdraw success");
+        await loadDashboardData();
 
-                document.getElementById("userAddress").innerText = userAddress;
-                document.getElementById("walletAddressDiv").classList.remove("hidden");
-                document.getElementById("btnText").innerText = "Account Synced";
-
-                // Load Automated Enterprise Network Links
-                const links = getReferralLinks(userAddress);
-                document.getElementById("leftRefLink").innerText = links.left;
-                document.getElementById("rightRefLink").innerText = links.right;
-
-                await loadDashboardData();
-            } catch(err) {
-                console.error("Wallet data binding synchronization runtime crash:", err);
-            }
-        }
-
-        async function loadDashboardData() {
-            if (!dimexContract || !userAddress) return;
-            try {
-                const stats = await dimexContract.getDashboardStats(userAddress);
-                const tree = await dimexContract.getTreeNode(userAddress);
-                const walletBalanceRaw = await dimexContract.getWalletBalance(userAddress);
-
-                const earnings = stats.earnings; 
-                const volumes = stats.volumes;
-                const counts = stats.counts;
-                const limits = stats.limits;
-
-                // FIXED: Modified to match exact structural safe division utility
-                const format = (val) => (Number(val) / 1e18).toFixed(2);
-
-                document.getElementById("statTotalEarned").innerText = format(earnings[0]) + " USDT";
-                document.getElementById("statRoiIncome").innerText = format(earnings[1]) + " USDT";
-                document.getElementById("statDirectIncome").innerText = format(earnings[2]) + " USDT";
-                document.getElementById("statBinaryIncome").innerText = format(earnings[3]) + " USDT";
-                document.getElementById("statWalletBalance").innerText = format(earnings[4]) + " USDT";
-                document.getElementById("statTotalWithdrawn").innerText = format(earnings[5]) + " USDT";
-                document.getElementById("withdrawableDisplay").innerText = format(walletBalanceRaw) + " USDT";
-
-                document.getElementById("statTotalDeposit").innerText = format(volumes[0]) + " USDT";
-                document.getElementById("volActive").innerText = format(volumes[1]);
-                document.getElementById("volLeftCF").innerText = format(volumes[2]);
-                document.getElementById("volRightCF").innerText = format(volumes[3]);
-                document.getElementById("volLeftTotal").innerText = format(volumes[4]);
-                document.getElementById("volRightTotal").innerText = format(volumes[5]);
-                document.getElementById("volTotal").innerText = ((Number(volumes[4]) + Number(volumes[5])) / 1e18).toFixed(2);
-
-                document.getElementById("countDirect").innerText = counts[0].toString();
-                document.getElementById("countLeft").innerText = counts[1].toString();
-                document.getElementById("countRight").innerText = counts[2].toString();
-                document.getElementById("countTotal").innerText = counts[3].toString();
-
-                const mapCap = limits[0];
-                const remaining = limits[1];
-                const pctBps = Number(limits[2]);
-                const percentageReal = (pctBps / 100).toFixed(1);
-
-                document.getElementById("statMapCap").innerText = format(mapCap) + " USDT";
-                document.getElementById("statRemaining").innerText = format(remaining) + " USDT";
-                document.getElementById("capPercentage").innerText = percentageReal + "%";
-                document.getElementById("progressBar").style.width = percentageReal + "%";
-
-                const cleanNode = (addr) => addr === ethers.ZeroAddress ? "Empty Node" : `${addr.substring(0,6)}...${addr.substring(38)}`;
-                document.getElementById("nodeLeft").innerText = cleanNode(tree.left);
-                document.getElementById("nodeRight").innerText = cleanNode(tree.right);
-
-            } catch (err) {
-                console.error("RPC Live Parse Exception Errors:", err);
-            }
-        }
-
-        async function executeDeposit() {
-            if (!dimexContract) return alert("Verify core web3 connection path node.");
-            const amountInput = document.getElementById("depositAmount").value;
-            let ref = document.getElementById("refAddress").value;
-            let parent = document.getElementById("parentAddress").value;
-
-            if (!amountInput || amountInput <= 0) return alert("Investment stake allocation target not set.");
-            
-            if(!ref) ref = ethers.ZeroAddress; 
-            if(!parent) parent = ethers.ZeroAddress;
-
-            try {
-                // Parse input accurately safely using BigInt transformations
-                const amountWei = ethers.parseUnits(amountInput.toString(), 18);
-                
-                const allowance = await usdtContract.allowance(userAddress, DIMEX_CONTRACT_ADDRESS);
-                if(allowance < amountWei) {
-                    const approveTx = await usdtContract.approve(DIMEX_CONTRACT_ADDRESS, amountWei);
-                    await approveTx.wait();
-                }
-
-                const tx = await dimexContract.deposit(amountWei, ref, parent, isLeftPlacementSelected);
-                await tx.wait();
-                
-                alert("Staking commitment locked and executed successfully.");
-                await loadDashboardData();
-            } catch (err) {
-                console.error("Staking execution failure:", err);
-                alert("Transaction rejected or insufficient runtime balances.");
-            }
-        }
-
-        async function executeWithdraw() {
-            if (!dimexContract) return alert("Active cryptography authorization state required.");
-            try {
-                const tx = await dimexContract.withdraw();
-                await tx.wait();
-                alert("Withdraw processing complete. Funds transferred.");
-                await loadDashboardData();
-            } catch (err) {
-                console.error("Withdraw fault state analysis logic:", err);
-                alert("Transaction execution dropped.");
-            }
-        }
+    } catch (err) {
+        alert(err?.message || "Withdraw failed");
+    }
+}
     </script>
 </body>
 </html>
