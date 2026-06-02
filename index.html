@@ -76,89 +76,100 @@
 
 <main class="max-w-7xl mx-auto px-4 mt-8 space-y-8">
 
-<!-- Wallet -->
+<!-- WALLET -->
 <div id="walletAddressDiv"
-    class="hidden text-sm text-slate-300 bg-slate-900 p-3 rounded-xl border border-cyan-500/20">
-    Connected:
-    <span id="userAddress" class="text-cyan-400 font-mono">0x0...</span>
+ class="hidden bg-slate-900 p-3 rounded-xl border border-cyan-500/30">
+ Connected:
+ <span id="userAddress" class="text-cyan-400 font-mono"></span>
 </div>
 
 <!-- CAP -->
-<section class="card-bg p-6 rounded-2xl card-hover">
-    <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold text-slate-200">4X Income Protection Cap</h3>
-        <span id="capPercentage" class="text-2xl font-bold text-yellow-400">0%</span>
-    </div>
+<section class="card-bg p-6 rounded-2xl">
+ <div class="flex justify-between mb-4">
+   <h3>4X Income Cap</h3>
+   <span id="capPercentage" class="text-yellow-400">0%</span>
+ </div>
 
-    <div class="w-full bg-slate-800 h-5 rounded-full overflow-hidden">
-        <div id="progressBar"
-            class="h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 transition-all duration-500"
-            style="width:0%"></div>
-    </div>
+ <div class="h-4 bg-slate-800 rounded">
+   <div id="progressBar" class="h-full bg-gradient-to-r from-cyan-400 to-purple-500" style="width:0%"></div>
+ </div>
 
-    <div class="grid grid-cols-3 gap-4 mt-4 text-center">
-        <div class="bg-slate-900 p-3 rounded-xl">
-            <p class="text-xs text-slate-400">4X Target</p>
-            <p id="statMapCap" class="text-lg font-bold text-white">0.00 USDT</p>
-        </div>
-
-        <div class="bg-slate-900 p-3 rounded-xl">
-            <p class="text-xs text-slate-400">Total Earned</p>
-            <p id="statTotalEarned" class="text-lg font-bold text-green-400">0.00 USDT</p>
-        </div>
-
-        <div class="bg-slate-900 p-3 rounded-xl">
-            <p class="text-xs text-slate-400">Remaining</p>
-            <p id="statRemaining" class="text-lg font-bold text-cyan-300">0.00 USDT</p>
-        </div>
-    </div>
+ <div class="grid grid-cols-3 gap-3 mt-4">
+   <div class="bg-slate-900 p-3 rounded"> <p>Target</p><p id="statMapCap">0</p></div>
+   <div class="bg-slate-900 p-3 rounded"> <p>Earned</p><p id="statTotalEarned">0</p></div>
+   <div class="bg-slate-900 p-3 rounded"> <p>Remain</p><p id="statRemaining">0</p></div>
+ </div>
 </section>
 
 <!-- STATS -->
-<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+<section class="grid md:grid-cols-3 lg:grid-cols-6 gap-4">
 
-<div class="card-bg p-5 rounded-2xl card-hover">
-    <p class="text-xs text-slate-400 uppercase">Deposit</p>
-    <p id="statTotalDeposit" class="text-xl font-bold text-white">0.00</p>
+<div class="card-bg p-4 rounded-xl"><p>Deposit</p><p id="statTotalDeposit">0</p></div>
+<div class="card-bg p-4 rounded-xl"><p>Wallet</p><p id="statWalletBalance">0</p></div>
+<div class="card-bg p-4 rounded-xl"><p>ROI</p><p id="statRoiIncome">0</p></div>
+<div class="card-bg p-4 rounded-xl"><p>Direct</p><p id="statDirectIncome">0</p></div>
+<div class="card-bg p-4 rounded-xl"><p>Binary</p><p id="statBinaryIncome">0</p></div>
+<div class="card-bg p-4 rounded-xl"><p>Withdraw</p><p id="statTotalWithdrawn">0</p></div>
+
+</section>
+
+<!-- REFERRAL -->
+<section class="grid md:grid-cols-2 gap-4">
+
+<div class="card-bg p-4 rounded-xl">
+ <h3 class="text-cyan-400">Left Referral</h3>
+ <p id="leftRefLink" class="break-all text-xs"></p>
 </div>
 
-<div class="card-bg p-5 rounded-2xl card-hover border border-cyan-500/20">
-    <p class="text-xs text-cyan-400 uppercase">Wallet</p>
-    <p id="statWalletBalance" class="text-xl font-bold text-cyan-300">0.00</p>
-</div>
-
-<div class="card-bg p-5 rounded-2xl card-hover">
-    <p class="text-xs text-slate-400 uppercase">ROI</p>
-    <p id="statRoiIncome" class="text-xl font-bold text-white">0.00</p>
-</div>
-
-<div class="card-bg p-5 rounded-2xl card-hover">
-    <p class="text-xs text-slate-400 uppercase">Direct</p>
-    <p id="statDirectIncome" class="text-xl font-bold text-white">0.00</p>
-</div>
-
-<div class="card-bg p-5 rounded-2xl card-hover">
-    <p class="text-xs text-slate-400 uppercase">Binary</p>
-    <p id="statBinaryIncome" class="text-xl font-bold text-white">0.00</p>
-</div>
-
-<div class="card-bg p-5 rounded-2xl card-hover">
-    <p class="text-xs text-slate-400 uppercase">Withdrawn</p>
-    <p id="statTotalWithdrawn" class="text-xl font-bold text-white">0.00</p>
+<div class="card-bg p-4 rounded-xl">
+ <h3 class="text-pink-400">Right Referral</h3>
+ <p id="rightRefLink" class="break-all text-xs"></p>
 </div>
 
 </section>
-    </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-md border-t border-slate-800 md:hidden z-50">
-        <div class="grid grid-cols-5 text-center py-3 text-slate-400 text-xs font-medium">
-            <a href="#" class="text-cyan-400 space-y-1"><div>📊</div><span>Dashboard</span></a>
-            <a href="#" class="space-y-1"><div>📥</div><span>Deposit</span></a>
-            <a href="#" class="space-y-1"><div>👥</div><span>Team</span></a>
-            <a href="#" class="space-y-1"><div>📜</div><span>History</span></a>
-            <a href="#" class="space-y-1"><div>👤</div><span>Profile</span></a>
-        </div>
-    </nav>
+<!-- TREE -->
+<section class="card-bg p-6 rounded-xl text-center">
+
+<h2 class="text-cyan-400 mb-4">Binary Tree</h2>
+
+<div class="text-center">
+ YOU
+ <div>/ \</div>
+
+ <div class="grid grid-cols-2 gap-4 mt-4">
+   <div class="bg-slate-900 p-3 rounded">
+     LEFT<br>
+     <span id="nodeLeft">Empty</span>
+   </div>
+
+   <div class="bg-slate-900 p-3 rounded">
+     RIGHT<br>
+     <span id="nodeRight">Empty</span>
+   </div>
+ </div>
+</div>
+
+</section>
+
+<!-- DOWNLINE -->
+<section class="grid md:grid-cols-3 gap-4">
+
+<div class="card-bg p-4 rounded-xl">
+ <p>Direct</p><p id="countDirect">0</p>
+</div>
+
+<div class="card-bg p-4 rounded-xl">
+ <p>Left</p><p id="countLeft">0</p>
+</div>
+
+<div class="card-bg p-4 rounded-xl">
+ <p>Right</p><p id="countRight">0</p>
+</div>
+
+</section>
+
+</main>
 
     <script type="module">      
         import { createAppKit } from 'https://esm.sh/@reown/appkit?bundle'      
